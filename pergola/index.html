@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Waterfront Pergola &amp; Outdoor Kitchen — Oak Park Construction</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root { --gold: #c9a455; --dark: #0d0d0d; }
+    body { background: var(--dark); color: #fff; font-family: 'Montserrat', sans-serif; height: 100vh; overflow: hidden; }
+    .slideshow { width: 100%; height: 100vh; position: relative; }
+    .slide {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.5s ease;
+      background: var(--dark);
+    }
+    .slide.active { opacity: 1; pointer-events: all; }
+
+    /* Header */
+    .slide-header {
+      position: absolute; top: 24px; left: 32px; right: 32px;
+      display: flex; justify-content: space-between; align-items: center; z-index: 10;
+    }
+    .brand { font-size: 10px; letter-spacing: 0.3em; color: rgba(255,255,255,0.45); text-transform: uppercase; }
+    .brand span { color: var(--gold); }
+    .slide-counter { font-size: 11px; letter-spacing: 0.2em; color: rgba(255,255,255,0.35); }
+
+    /* Progress */
+    .progress-bar { position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: rgba(255,255,255,0.1); z-index: 20; }
+    .progress-fill { height: 100%; background: var(--gold); transition: width 0.4s ease; }
+
+    /* Nav */
+    .nav-buttons { position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%); display: flex; gap: 12px; z-index: 20; }
+    .nav-btn {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: rgba(255,255,255,0.15); border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s; backdrop-filter: blur(8px);
+    }
+    .nav-btn:hover { background: rgba(255,255,255,0.28); }
+    .nav-btn svg { width: 18px; height: 18px; stroke: #fff; fill: none; stroke-width: 2; }
+
+    /* Side dots */
+    .side-indicator {
+      position: absolute; right: 20px; top: 50%; transform: translateY(-50%);
+      display: flex; flex-direction: column; gap: 8px; z-index: 10;
+    }
+    .side-dot { width: 4px; height: 20px; background: rgba(255,255,255,0.18); border-radius: 2px; cursor: pointer; transition: all 0.3s; }
+    .side-dot.active { height: 40px; background: var(--gold); }
+
+    /* COVER */
+    .slide-cover .img-full { position: absolute; inset: 0; background: url('images/night_enhanced.jpg') center/cover no-repeat; }
+    .slide-cover .img-full::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.3) 55%, rgba(0,0,0,0.15) 100%);
+    }
+    .slide-cover .content { position: relative; z-index: 5; text-align: center; padding: 0 32px; }
+    .label-small { font-size: 10px; letter-spacing: 0.35em; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+    .cover-divider { width: 40px; height: 1px; background: var(--gold); margin: 14px auto; }
+    .slide-cover h1 { font-family: 'Playfair Display', serif; font-size: clamp(34px, 6vw, 72px); font-weight: 400; line-height: 1.1; color: #fff; margin-bottom: 20px; }
+    .cover-sub { font-size: 10px; letter-spacing: 0.4em; text-transform: uppercase; color: rgba(255,255,255,0.4); }
+
+    /* Inner slides */
+    .slide-content { width: 100%; max-width: 860px; padding: 72px 32px; display: flex; flex-direction: column; gap: 20px; }
+    .img-row { display: flex; gap: 12px; width: 100%; }
+    .img-box { flex: 1; border-radius: 16px; overflow: hidden; aspect-ratio: 4/5; background: #1a1a1a; }
+    .img-box.wide { aspect-ratio: 16/9; }
+    .img-box img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .slide-text { display: flex; flex-direction: column; gap: 6px; }
+    .phase-row { display: flex; align-items: center; gap: 10px; }
+    .phase-label { font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(255,255,255,0.35); }
+    .phase-badge { font-size: 9px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); border: 1px solid var(--gold); padding: 3px 8px; border-radius: 2px; }
+    .slide-title { font-family: 'Playfair Display', serif; font-size: clamp(26px, 4vw, 44px); font-weight: 400; color: #fff; line-height: 1.2; }
+    .slide-desc { font-size: 13px; font-weight: 300; color: rgba(255,255,255,0.48); line-height: 1.7; max-width: 500px; }
+
+    /* Contact */
+    .slide-contact { justify-content: center; align-items: center; }
+    .contact-grid { display: flex; gap: 14px; max-width: 900px; width: 100%; padding: 0 32px; align-items: stretch; }
+    .contact-card { flex: 1; background: #141414; border: 1px solid rgba(255,255,255,0.07); border-radius: 16px; padding: 26px 22px; display: flex; flex-direction: column; gap: 14px; }
+    .contact-card.wide { flex: 1.2; background: #0d0d0d; }
+    .contact-name { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 400; line-height: 1.2; }
+    .contact-name span { font-weight: 700; }
+    .contact-role { font-size: 9px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-top: -8px; }
+    .contact-info { display: flex; flex-direction: column; gap: 10px; }
+    .contact-row { display: flex; align-items: center; gap: 10px; font-size: 12px; color: rgba(255,255,255,0.65); }
+    .contact-row svg { width: 14px; height: 14px; stroke: var(--gold); fill: none; stroke-width: 1.5; flex-shrink: 0; }
+    .company-info { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,255,255,0.28); line-height: 2.1; }
+    .company-website { font-size: 11px; color: var(--gold); }
+    .lic { font-size: 9px; letter-spacing: 0.2em; color: rgba(255,255,255,0.18); text-transform: uppercase; }
+
+    @media (max-width: 640px) {
+      .contact-grid { flex-direction: column; overflow-y: auto; max-height: 80vh; }
+      .img-row { flex-direction: column; }
+      .img-box { aspect-ratio: 16/10 !important; }
+    }
+  </style>
+</head>
+<body>
+<div class="slideshow">
+
+  <!-- 1: COVER -->
+  <div class="slide slide-cover active" data-index="0">
+    <div class="slide-header"><span class="brand">OAK PARK <span>CONSTRUCTION</span></span><span class="slide-counter">1 / 8</span></div>
+    <div class="img-full"></div>
+    <div class="content">
+      <p class="label-small">Completed Project</p>
+      <div class="cover-divider"></div>
+      <h1>Waterfront Pergola<br>&amp; Outdoor Kitchen</h1>
+      <p class="cover-sub">Oak Park Construction &nbsp;&middot;&nbsp; South Florida</p>
+    </div>
+  </div>
+
+  <!-- 2: GROUND ZERO -->
+  <div class="slide" data-index="1">
+    <div class="slide-header"><span class="brand">OAK PARK <span>CONSTRUCTION</span></span><span class="slide-counter">2 / 8</span></div>
+    <div class="slide-content">
+      <div class="img-row">
+        <div class="img-box"><img src="images/before_wide.jpg" alt="Before wide"></div>
+        <div class="img-box"><img src="images/before_side.jpg" alt="Before side"></div>
+      </div>
+      <div class="slide-text">
+        <div class="phase-row"><span class="phase-label">Phase 01</span><span class="phase-badge">Before</span></div>
+        <h2 class="slide-title">Ground Zero</h2>
+        <p class="slide-desc">Two angles of the waterfront lot before the first column rose.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3: FRAMED -->
+  <div class="slide" data-index="2">
+    <div class="slide-header"><span class="brand">OAK PARK <span>CONSTRUCTION</span></span><span class="slide-counter">3 / 8</span></div>
+    <div class="slide-content">
+      <div class="img-row"><div class="img-box wide"><img src="images/during_frame.jpg" alt="Framing"></div></div>
+      <div class="slide-text">
+        <div class="phase-row"><span class="phase-label">Phase 02</span><span class="phase-badge">During</span></div>
+        <h2 class="slide-title">Framed</h2>
+        <p class="slide-desc">Roof framing complete &mdash; waterfront canal perfectly framed through the structure.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4: THE STRUCTURE -->
+  <div class="slide" data-index="3">
+    <div class="slide-header"><span class="brand">OAK PARK <span>CONSTRUCTION</span></span><span class="slide-counter">4 / 8</span></div>
+    <div class="slide-content">
+      <div class="img-row"><div class="img-box wide"><img src="images/day_front.png" alt="Structure front"></div></div>
+      <div class="slide-text">
+        <div class="phase-row"><span class="phase-label">Phase 03</span><span class="phase-badge">Complete</span></div>
+        <h2 class="slide-title">The Structure</h2>
+        <p class="slide-desc">Concrete columns, tongue &amp; groove wood soffit, travertine deck &mdash; front elevation.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5: BUILT-IN KITCHEN -->
+  <div class="slide" data-index="4">
+    <div class="slide-header"><span class="brand">OAK PARK <span>CONSTRUCTION</span></span><span class="slide-counter">5 / 8</span></div>
+    <div class="slide-content">
+      <div class="img-row">
+        <div class="img-box"><img src="images/day_bar.png" alt="Bar"></div>
+        <div class="img-box"><img src="images/day_kitchen.jpg" alt="Kitchen"></div>
+      </div>
+      <div class="slide-text">
+        <div class="phase-row"><span class="phase-label">Phase 03</span><span class="phase-badge">Complete</span></div>
+        <h2 class="slide-title">Built-In Kitchen</h2>
+        <p class="slide-desc">Cristallo countertop, waterfall bar, built-in grill, stainless appliances, louvered TV wall.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6: CANAL VIEW -->
+  <div class="slide" data-index="5">
+    <div class="slide-header"><span class="brand">OAK PARK <span>CONSTRUCTION</span></span><span class="slide-counter">6 / 8</span></div>
+    <div class="slide-content">
+      <div class="img-row"><div class="img-box wide"><img src="images/day_back.png" alt="Canal view"></div></div>
+      <div class="slide-text">
+        <div class="phase-row"><span class="phase-label">Phase 03</span><span class="phase-badge">Complete</span></div>
+        <h2 class="slide-title">Canal View</h2>
+        <p class="slide-desc">Rear elevation &mdash; the structure opens fully to the waterfront canal.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7: AFTER DARK -->
+  <div class="slide" data-index="6">
+    <div class="slide-header"><span class="brand">OAK PARK <span>CONSTRUCTION</span></span><span class="slide-counter">7 / 8</span></div>
+    <div class="slide-content">
+      <div class="img-row"><div class="img-box wide"><img src="images/night_wide.png" alt="After dark"></div></div>
+      <div class="slide-text">
+        <div class="phase-row"><span class="phase-label">Phase 03</span><span class="phase-badge">Complete</span></div>
+        <h2 class="slide-title">After Dark</h2>
+        <p class="slide-desc">Backlit Cristallo panels, recessed lighting, ceiling fan &mdash; the space fully alive at night.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8: CONTACT -->
+  <div class="slide slide-contact" data-index="7">
+    <div class="slide-header"><span class="brand">OAK PARK <span>CONSTRUCTION</span></span><span class="slide-counter">8 / 8</span></div>
+    <div class="contact-grid">
+      <div class="contact-card wide">
+        <span class="brand" style="font-size:11px;">OAK PARK <span>CONSTRUCTION</span></span>
+        <div class="company-info">Residential &middot; Commercial<br>Additions &middot; Shell Construction<br>Concrete &middot; Outdoor Features</div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <span class="company-website">www.oakpark-construction.com</span>
+          <span style="font-size:11px;color:rgba(255,255,255,0.3);">@oakparkconstruction</span>
+        </div>
+        <p class="lic">Lic. CBC1263425</p>
+        <p style="font-size:10px;color:rgba(255,255,255,0.22);margin-top:4px;">We speak &#127482;&#127480;&nbsp; Falamos &#127463;&#127479;&nbsp; Hablamos &#127474;&#127485;</p>
+      </div>
+      <div class="contact-card">
+        <div><p class="contact-name">Michael <span>McFolling</span></p><p class="contact-role">Project Manager</p></div>
+        <div class="contact-info">
+          <div class="contact-row"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.22 2.18 2 2 0 012.18 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.16 6.16l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92v2z"/></svg>+954-258-6769</div>
+          <div class="contact-row"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Michael@oakpark-construction.com</div>
+          <div class="contact-row"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>@oakparkconstruction</div>
+        </div>
+      </div>
+      <div class="contact-card">
+        <div><p class="contact-name">Matthew <span>McFolling</span></p><p class="contact-role">General Contractor</p></div>
+        <div class="contact-info">
+          <div class="contact-row"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.22 2.18 2 2 0 012.18 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.16 6.16l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92v2z"/></svg>+708-408-5256</div>
+          <div class="contact-row"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Matthew@oakpark-construction.com</div>
+          <div class="contact-row"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>@oakparkconstruction</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="side-indicator" id="si"></div>
+  <div class="progress-bar"><div class="progress-fill" id="pf"></div></div>
+  <div class="nav-buttons">
+    <button class="nav-btn" onclick="go(-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <button class="nav-btn" onclick="go(1)"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+  </div>
+</div>
+<script>
+  const slides=document.querySelectorAll('.slide'),total=slides.length;
+  let cur=0;
+  const si=document.getElementById('si');
+  for(let i=0;i<total;i++){const d=document.createElement('div');d.className='side-dot'+(i===0?' active':'');d.onclick=()=>goTo(i);si.appendChild(d);}
+  function goTo(n){slides[cur].classList.remove('active');si.children[cur].classList.remove('active');cur=(n+total)%total;slides[cur].classList.add('active');si.children[cur].classList.add('active');document.getElementById('pf').style.width=((cur+1)/total*100)+'%';}
+  function go(d){goTo(cur+d);}
+  document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowDown')go(1);if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(-1);});
+  let sx=0;document.addEventListener('touchstart',e=>sx=e.touches[0].clientX);document.addEventListener('touchend',e=>{if(Math.abs(sx-e.changedTouches[0].clientX)>50)go(sx>e.changedTouches[0].clientX?1:-1);});
+  document.getElementById('pf').style.width=(1/total*100)+'%';
+</script>
+</body>
+</html>
